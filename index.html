@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>傻蛋开心一点</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: "Microsoft YaHei", sans-serif;
+    width: 100vw;
+    height: 100vh;
+    background-color: #fff8f0;
+    position: relative;
+  }
+
+  .popup {
+    position: absolute;
+    border-radius: 1rem;
+    color: #000;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.5s, transform 0.5s;
+    box-shadow: 0 0 1vh rgba(0,0,0,0.3);
+    max-width: 90vw;
+  }
+
+  /* 桌面端弹窗样式 */
+  .popup.pc {
+    font-size: 1.2vh;
+    padding: 1vh 2vw;
+  }
+
+  /* 手机端弹窗样式 */
+  .popup.mobile {
+    font-size: 1.8vh;
+    padding: 1.5vh 3vw;
+    box-shadow: 0 0 2vh rgba(0,0,0,0.3);
+  }
+
+  .main-popup {
+    position: fixed;
+    width: max-content;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.6vh;
+    color: #000;
+    padding: 2vh 2vw;
+    border: 0.3vh solid #ff1493;
+    border-radius: 1vh;
+    background: linear-gradient(135deg, #ffb6c1, #ff69b4);
+    box-shadow: 0 0 2vh #ff69b4;
+    animation: blink 1s infinite;
+    z-index: 1000;
+    text-align: center;
+    word-break: break-word;
+    max-width: 90vw;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+</style>
+</head>
+<body>
+  <div class="main-popup">傻蛋要开心啊！！！</div>
+
+  <script>
+    const messages = {
+      一般: ["梦想成真","保持好心情","早点休息","每天都要元气满满","多喝水哦~","金榜题名","今天过得开心","记得吃水果","别熬夜","天凉了，多穿衣服","愿所有烦恼都消失","好好爱自己","顺顺利利","期待下一次见面","想你了","注意休息","照顾好自己"],
+      家人: ["爸妈永远爱你","家里一切都好","记得常回家看看","家是永远的港湾","家人永远支持你","妈妈做了你爱吃的菜","家人想念你","记得打电话给爸妈","一家人最重要的是健康","家人的爱是最温暖的"],
+      恋人: ["你的笑容真美","你是我生命中的阳光","和你在一起的时光最珍贵","你今天辛苦了","做个甜甜的梦"],
+      朋友: ["有空一起喝一杯","谢谢你一直的陪伴","朋友一生一起走","真高兴认识你","友谊长存","你的朋友永远支持你","朋友间无需客气","你是值得骄傲的人","为你加油","你永远不是一个人"],
+      鼓励: ["相信自己，你可以的！","今天的付出，明天会有收获","坚持就是胜利","你比想象中更强大","困难只是暂时的","不要放弃，继续努力","勇敢面对挑战","每一步都是进步","你的努力不会白费","成功就在前方等着你"]
+    };
+
+    const colors = {
+      一般: ["#FFB6C1","#E6E6FA","#FFDAB9"],
+      家人: ["#98FB98","#90EE90","#7FFFD4"],
+      恋人: ["#FFC0CB","#FFB6C1","#FF69B4"],
+      朋友: ["#87CEFA","#ADD8E6","#B0E0E6"],
+      鼓励: ["#FFD700","#FFFF00","#FFA07A"]
+    };
+
+    const decorations = ["♥","♡","✿","❀","✨","☆","✺","❤","♬","☀","☺","♪"];
+
+    // 判断是否是手机端
+    const isMobile = window.innerWidth < 768;
+    const maxPopups = isMobile ? 300 : 500;
+    const createIntervalTime = isMobile ? 300 : 100; // 手机生成慢一些
+    const popupClass = isMobile ? "popup mobile" : "popup pc";
+
+    let popupCount = 0;
+    let timer1;
+
+    function randomMessage() {
+      const categories = Object.keys(messages);
+      const cat = categories[Math.floor(Math.random() * categories.length)];
+      let msg = messages[cat][Math.floor(Math.random() * messages[cat].length)];
+      const color = colors[cat][Math.floor(Math.random() * colors[cat].length)];
+      if (Math.random() > 0.5) {
+        msg =
+          decorations[Math.floor(Math.random() * decorations.length)] +
+          " " + msg + " " +
+          decorations[Math.floor(Math.random() * decorations.length)];
+      }
+      return { text: msg, color: color };
+    }
+
+    function createPopup() {
+      if (popupCount >= maxPopups) {
+        clearInterval(timer1);
+        return;
+      }
+      popupCount++;
+
+      const { text, color } = randomMessage();
+      const popup = document.createElement("div");
+      popup.className = popupClass;
+      popup.style.background = color;
+      popup.textContent = text;
+
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const popupWidth = Math.min(isMobile ? 250 : 200, width * 0.35);
+      const popupHeight = isMobile ? 60 : 50;
+      const x = Math.random() * (width - popupWidth);
+      const y = Math.random() * (height - popupHeight);
+      popup.style.left = x + "px";
+      popup.style.top = y + "px";
+
+      document.body.appendChild(popup);
+
+      // 渐显动画
+      setTimeout(() => {
+        popup.style.opacity = 1;
+        popup.style.transform = "scale(1)";
+      }, 50);
+
+      // 轻微漂浮动画
+      let angle = 0;
+      const floatInterval = setInterval(() => {
+        angle += 0.05;
+        popup.style.top = y + 3 * Math.sin(angle) + "px";
+        popup.style.left = x + 3 * Math.cos(angle) + "px";
+      }, 50);
+    }
+
+    // 初始缓慢生成
+    for (let i = 0; i < 30; i++) {
+      setTimeout(createPopup, i * 100);
+    }
+
+    // 持续生成
+    timer1 = setInterval(createPopup, createIntervalTime);
+
+    // 主弹窗淡出
+    setTimeout(() => {
+      const main = document.querySelector(".main-popup");
+      main.style.transition = "opacity 1.5s, transform 1.5s";
+      main.style.opacity = 0;
+      setTimeout(() => main.remove(), 1500);
+    }, 1500);
+  </script>
+</body>
+</html>
